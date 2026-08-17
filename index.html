@@ -1,458 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Landscaping Builder Portfolio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --black: #0a0a0a;
-    --panel: #131313;
-    --line: rgba(255,255,255,0.1);
-    --white: #f5f4f1;
-    --gray: #93908a;
-    --gray-dim: #605e59;
-    --orange: #ff5a1f;
-  }
-
-  /* VARIABLES PARA MODO OSCURO TRAS LA ANIMACIÓN */
-  html.light-mode {
-    --bg-root: #121212; /* Fondo gris oscuro profundo */
-    --text-root: #f5f4f1; /* Texto principal claro */
-    --panel-root: #1c1c1c; /* Tarjetas gris carbón */
-    --line-root: rgba(255,255,255,0.12); /* Líneas sutiles claras */
-    --muted-root: #b0aea9; /* Gris claro de alta legibilidad para párrafos */
-  }
-
-  *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--bg-root, var(--black));
-    color:var(--text-root, var(--white));
-    font-family:'Work Sans',sans-serif;
-    line-height:1.65;
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-  h1,h2,h3{font-family:'Fraunces',serif;font-weight:500;letter-spacing:-0.01em;}
-  .mono{font-family:'JetBrains Mono',monospace;}
-  a{color:inherit;}
-
-  .reveal{opacity:0;transform:translateY(16px);transition:opacity 0.4s ease, transform 0.4s ease;}
-  .reveal.in{opacity:1;transform:translateY(0);}
-
-  /* intro overlay */
-  .intro-overlay{
-    position:fixed;inset:0;
-    z-index:0;
-    background:var(--black);overflow:hidden;
-    will-change:opacity, transform;
-    pointer-events:auto;
-  }
-  .intro-overlay img{
-    width:100%;height:100%;object-fit:cover;object-position:center 22%;
-    display:block;will-change:transform;
-  }
-  .intro-overlay::after{
-    content:"";position:absolute;inset:0;
-    background:linear-gradient(to top, rgba(10,10,10,0.45), transparent 40%);
-  }
-  .intro-hint{
-    position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
-    font-size:1.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--white);
-    display:flex;flex-direction:column;align-items:center;gap:2px;opacity:0.7;
-  }
-  .intro-hint .arrow{width:2px;height:50px;background:rgba(245,244,241,0.5);position:relative;overflow:hidden;}
-  .intro-hint .arrow::before{
-    content:"";position:absolute;top:-100%;left:0;width:100%;height:100%;background:var(--white);
-    animation:hint-drip 1s ease-in-out infinite;
-  }
-  @keyframes hint-drip{0%{top:-100%;}60%{top:100%;}100%{top:100%;}}
-
-  /* pane gris oscuro de transición */
-  .white-pane{
-    position:fixed;inset:0;z-index:1;background:#121212;opacity:0;pointer-events:none;
-    transition:opacity 0.25s ease;
-  }
-
-  /* Intro title */
-  .intro-title{
-    position:fixed;
-    top:40vh;
-    left:50%;
-    transform:translate(-50%, 0);
-    z-index:3;
-    font-family: 'Fraunces', serif;
-    font-weight:600;
-    font-size:clamp(2rem, 6vw, 4rem);
-    color:var(--white);
-    text-align:center;
-    pointer-events:none;
-    letter-spacing:-0.02em;
-    transition:opacity 0.2s ease, transform 0.2s ease, color 0.2s ease;
-    text-shadow: 0 6px 30px rgba(0,0,0,0.6);
-    will-change:opacity, transform;
-  }
-  html.light-mode .intro-title { color:var(--text-root, var(--white)); text-shadow: none; }
-
-  header{
-    position:fixed;top:0;left:0;right:0;z-index:50;
-    display:flex;justify-content:flex-end;align-items:center;
-    padding:26px 6vw;
-  }
-  nav a{
-    margin-left:34px;font-size:0.85rem;font-weight:500;text-decoration:none;color:var(--gray);
-    transition:color 0.2s;
-  }
-  nav a:hover{color:var(--text-root, var(--white));}
-
-  section{position:relative;z-index:2;padding:80px 6vw;max-width:1100px;margin:0 auto;}
-  footer{position:relative;z-index:2;}
-
-  /* HERO */
-  .hero{
-    min-height:100vh;padding-top:120px;
-    display:flex;flex-direction:column;justify-content:center;
-  }
-  .eyebrow{
-    font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--orange);
-    letter-spacing:0.1em;text-transform:uppercase;margin-bottom:22px;font-weight:500;
-  }
-  .hero h1{
-    font-size:clamp(2.4rem, 4.6vw, 3.8rem);
-    line-height:1.1;max-width:14ch;color:var(--text-root, var(--white));font-weight:500;
-  }
-  .hero h1 em{font-style:italic;color:var(--orange);font-weight:500;}
-
-  /* Estilo del párrafo principal */
-  .hero p{
-    max-width:42ch;
-    margin-top:24px;
-    font-size:1.02rem;
-    color:var(--muted-root, var(--gray));
-    transition:color 0.3s ease;
-  }
-
-  .hero-cta{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap;}
-  .btn{
-    display:inline-block;padding:13px 26px;border-radius:2px;
-    font-size:0.88rem;font-weight:500;text-decoration:none;
-    transition:background 0.2s, color 0.2s, border-color 0.2s;
-  }
-  .btn-primary{background:var(--white);color:var(--black);}
-  .btn-primary:hover{background:var(--orange);color:var(--white);}
-  .btn-ghost{border:1px solid var(--line);color:var(--white);}
-  .btn-ghost:hover{border-color:var(--orange);color:var(--orange);}
-
-  /* SECTION LABEL */
-  .label{
-    font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--orange);
-    letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;font-weight:500;
-  }
-  .section-title{font-size:clamp(1.6rem,3vw,2.2rem);margin-bottom:16px;color:var(--text-root, var(--white));}
-  .section-intro{max-width:56ch;color:var(--muted-root, var(--gray));margin-bottom:44px;}
-
-  /* GALLERY */
-  .gallery-grid{
-    display:grid;
-    grid-template-columns:1.3fr 1fr 1fr;
-    grid-template-rows:150px 150px 150px;
-    gap:14px;
-  }
-  .g-card{
-    position:relative;border-radius:4px;overflow:hidden;
-    border:1px solid var(--line);background:var(--panel);
-    display:flex;flex-direction:column;justify-content:flex-end;
-    transition:border-color 0.2s, background 0.2s;
-  }
-  .g-card:hover{border-color:var(--orange);}
-  .g-card .placeholder-icon{
-    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-    font-size:1.8rem;opacity:0.3;
-  }
-  .g-card .tag-row{position:relative;padding:14px 16px;}
-  .g-card .biome-tag{
-    font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--orange);
-    letter-spacing:0.04em;
-  }
-  .g-card .g-title{font-family:'Fraunces',serif;font-size:1rem;margin-top:4px;color:var(--text-root, var(--white));}
-
-  .g-featured{grid-column:1;grid-row:1 / span 3;}
-  .g-top-a{grid-column:2;grid-row:1;}
-  .g-top-b{grid-column:3;grid-row:1;}
-  .g-tall-a{grid-column:2;grid-row:2 / span 2;}
-  .g-tall-b{grid-column:3;grid-row:2 / span 2;}
-
-  .gallery-note{
-    margin-top:22px;font-size:0.82rem;color:var(--muted-root, var(--gray));
-    font-family:'JetBrains Mono',monospace;padding:14px 16px;
-    border:1px solid var(--line);border-radius:4px;
-  }
-
-  /* CONTACT (Caja contenedora contrastada en gris más claro) */
-  .contact-wrap{
-    background:#1c1c1c;color:var(--white);
-    border: 1px solid var(--line-root);
-    border-radius:6px;padding:70px 6vw;text-align:center;
-  }
-  .contact-marker{
-    display:inline-block;font-size:0.7rem;color:var(--orange);
-    letter-spacing:0.1em;text-transform:uppercase;font-weight:500;
-    padding:6px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:20px;
-    margin-bottom:22px;
-  }
-  .contact-wrap h2{font-size:clamp(1.7rem,3.6vw,2.4rem);margin-bottom:16px;color:var(--white);}
-  .contact-wrap p{color:var(--muted-root);max-width:48ch;margin:0 auto 32px;}
-  .contact-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:36px;}
-  .btn-icon{display:inline-flex;align-items:center;gap:9px;}
-  .btn-icon svg{flex-shrink:0;}
-
-  .btn-primary.on-dark{background:var(--white);color:var(--black);}
-  .btn-primary.on-dark:hover{background:var(--orange);color:var(--white);}
-  .btn-ghost.on-dark{border-color:rgba(255,255,255,0.2);color:var(--white);}
-  .btn-ghost.on-dark:hover{border-color:var(--orange);color:var(--orange);}
-
-  .social-divider{
-    font-size:0.7rem;color:var(--muted-root);font-family:'JetBrains Mono',monospace;
-    letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px;
-  }
-  .social-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
-  .social-icon{
-    width:42px;height:42px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;
-    border:1px solid rgba(255,255,255,0.15);color:var(--white);
-    transition:border-color 0.2s, color 0.2s;
-  }
-  .social-icon:hover{border-color:var(--orange);color:var(--orange);}
-
-  footer{
-    text-align:center;padding:40px 6vw;color:var(--gray-dim);font-size:0.78rem;
-    font-family:'JetBrains Mono',monospace;
-  }
-
-  /* REGLAS MODO GRIS OSCURO */
-  html.light-mode nav a { color:var(--muted-root); }
-  html.light-mode nav a:hover { color:var(--white); }
-  html.light-mode .hero p { color: #b0aea9; } /* Gris claro elegante para lectura */
-  html.light-mode .section-intro { color: #b0aea9; }
-  html.light-mode .gallery-note { color: var(--muted-root); border-color:var(--line-root); background:transparent; }
-  html.light-mode .g-card { background: var(--panel-root); border-color: var(--line-root); }
-  html.light-mode .g-card .g-title { color: var(--text-root); }
-  html.light-mode .section-title { color: var(--text-root); }
-  html.light-mode .label { color: var(--orange); }
-  html.light-mode footer { color: var(--gray-dim); }
-
-  /* Ajustes de botones en gris oscuro */
-  html.light-mode .hero .btn-primary { background: var(--white); color: var(--black); }
-  html.light-mode .hero .btn-primary:hover { background: var(--orange); color: var(--white); }
-  html.light-mode .hero .btn-ghost { border-color: rgba(255,255,255,0.25); color: var(--white); }
-  html.light-mode .hero .btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
-
-  @media (max-width:820px){
-    .hero{grid-template-columns:1fr;text-align:left;}
-    .gallery-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
-    .g-featured{grid-column:1 / span 2;grid-row:auto;aspect-ratio:16/9;}
-    .g-top-a,.g-top-b,.g-tall-a,.g-tall-b{grid-column:span 1;grid-row:auto;aspect-ratio:1;}
-    nav{display:none;}
-    .intro-title{top:34vh;font-size:clamp(1.6rem, 8vw, 3rem);}
-  }
-  @media (prefers-reduced-motion: reduce){
-    html{scroll-behavior:auto;}
-    *{transition:none !important;}
-    .reveal{opacity:1;transform:none;}
-    .intro-title{transition:none;opacity:1;transform:none;}
-    .white-pane{transition:none;opacity:1;}
-  }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Landscaping Builder Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
 
-<div class="intro-overlay" id="introOverlay">
-  <img src="profile.png" alt="Builder profile render">
-  <div class="intro-hint mono">
-    <span>Scroll</span>
-    <div class="arrow"></div>
+  <div class="intro-overlay" id="introOverlay">
+    <img src="profile.png" alt="Builder profile render">
+    <div class="intro-hint mono">
+      <span>Scroll</span>
+      <div class="arrow"></div>
+    </div>
   </div>
+
+  <div class="white-pane" id="whitePane" aria-hidden="true"></div>
+  <div class="intro-title" id="introTitle" aria-hidden="true">Lofty Builds</div>
+
+  <header>
+    <nav>
+      <a href="#work">Work</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <div class="eyebrow reveal"></div>
+      <h1 class="reveal"><em></em></h1>
+      <p class="reveal"></p>
+      <div class="hero-cta reveal">
+        <a href="#work" class=""></a>
+        <a href="#contact" class=""></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="header">
+    <div>
+      <div class="eyebrow reveal">Builder · All types of builds</div>
+      <h1 class="reveal">I turn your ideas into minecraft builds</h1>
+      <p class="reveal">I design all types of Minecraft builds, from small projects like boats or houses to large-scale villages, cities and entire worlds.</p>
+      <div class="hero-cta reveal">
+        <a href="#work" class="btn btn-primary">See work</a>
+        <a href="#contact" class="btn btn-ghost">Contact information</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="label reveal">01 — Work</div>
+    <h2 class="section-title reveal">Build selection</h2>
+    <p class="section-intro reveal">A sample of recent builds.</p>
+    <div class="gallery-grid">
+      <a href="terrain.html" class="g-card g-featured reveal">
+        <img src="terrain.jpg" alt="Terrain" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
+        <div class="tag-row" style="position:relative;z-index:2;background:linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
+          <div class="g-title">Terrain</div>
+        </div>
+      </a>
+
+      <a href="organics.html" class="g-card g-top-a reveal">
+        <div class="placeholder-icon">🌿</div>
+        <div class="tag-row">
+          <div class="g-title">Organics</div>
+        </div>
+      </a>
+
+      <a href="structures.html" class="g-card g-top-b reveal">
+        <div class="placeholder-icon">🏛️</div>
+        <div class="tag-row">
+          <div class="g-title">Structures</div>
+        </div>
+      </a>
+    </div>
+
+    <div class="gallery-note reveal">
+      // Note: these are card templates. Replace the emoji with &lt;img src="your-screenshot.jpg"&gt; inside each .g-card to show your real photos. While you gather more material, even 4-5 good screenshots from different angles are enough to launch the page.
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="contact-wrap reveal">
+      <div class="contact-marker mono">Open for commissions</div>
+      <h2>Got a project in mind?</h2>
+      <p>Tell me the details, size and deadline — I'll get back to you with a quote and delivery time.</p>
+      <div class="contact-links">
+        <a href="mailto:loftybuidsa@gmail.com" class="btn btn-primary on-dark btn-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5v-11Z"/><path d="m3 6 9 7 9-7"/></svg>
+          loftybuidsa@gmail.com
+        </a>
+        <a href="https://discord.com/users/loftty__" class="btn btn-ghost on-dark btn-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.1A17.6 17.6 0 0 0 15.9 4l-.2.4a12.9 12.9 0 0 1 3.8 1.9 15.6 15.6 0 0 0-13 0A12.7 12.7 0 0 1 10.3 4.4L10.1 4a17.6 17.6 0 0 0-4.4 1.1C2.4 9.3 1.6 13.4 1.9 17.4a17.6 17.6 0 0 0 5.4 2.8l.7-1.2a11.5 11.5 0 0 1-1.8-.9c.15-.1.3-.2.44-.32a12.4 12.4 0 0 0 11 0c.15.1.3.22.44.32-.57.35-1.17.65-1.8.9l.7 1.2a17.5 17.5 0 0 0 5.4-2.8c.4-4.7-.8-8.8-3.14-12.3ZM8.5 14.6c-.9 0-1.6-.85-1.6-1.9s.7-1.9 1.6-1.9 1.6.86 1.6 1.9-.7 1.9-1.6 1.9Zm7 0c-.9 0-1.6-.85-1.6-1.9s.7-1.9 1.6-1.9 1.6.86 1.6 1.9-.7 1.9-1.6 1.9Z"/></svg>
+          loftty__
+        </a>
+      </div>
+
+      <div class="social-divider">or find me on</div>
+      <div class="social-row">
+        <a href="https://x.com/LoftyBuilds" class="social-icon" title="X / Twitter" aria-label="X / Twitter">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-7-6.2 7H1.3l8.1-9.3L1 2h7l4.9 6.4L18.9 2Zm-1.2 18h1.9L7.4 4h-2l12.3 16Z"/></svg>
+        </a>
+        <a href="https://instagram.com/LoftyBuilds" class="social-icon" title="Instagram" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg>
+        </a>
+        <a href="https://youtube.com/@LoftyBuild" class="social-icon" title="YouTube" aria-label="YouTube">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.45-5.2a3 3 0 0 0-2.1-2.1C18.7 4.2 12 4.2 12 4.2s-6.7 0-8.45.5a3 3 0 0 0-2.1 2.1C1 8.5 1 12 1 12s0 3.5.45 5.2a3 3 0 0 0 2.1 2.1c1.75.5 8.45.5 8.45.5s6.7 0 8.45-.5a3 3 0 0 0 2.1-2.1C23 15.5 23 12 23 12ZM9.8 15.3V8.7l6 3.3-6 3.3Z"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+<!-- PayPal Button -->
+<div id="paypal-button-wrapper">
+  <div id="paypal-button-container"></div>
 </div>
 
-<div class="white-pane" id="whitePane" aria-hidden="true"></div>
-<div class="intro-title" id="introTitle" aria-hidden="true">Lofty Builds</div>
+<!-- Success Message -->
+<div id="paypal-success-message" class="paypal-success">
+  🎉 <strong>Subscription successful!</strong>
+  <p>Thank you for subscribing. Your subscription is now active.</p>
+</div>
 
-<header>
-  <nav>
-    <a href="#work">Work</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</header>
+<script src="https://www.paypal.com/sdk/js?client-id=AeGGhq2YtFeXJWpZEjAGjXZg9GA_k6Oe5TGv-O0NcR1Uqk2fFpCHckK5JgdX3AnBVH_SsnDh1E0YmVbI&vault=true&intent=subscription"
+  data-sdk-integration-source="button-factory"></script>
 
-<section class="hero">
-  <div>
-    <div class="eyebrow reveal"></div>
-    <h1 class="reveal"><em></em></h1>
-    <p class="reveal"></p>
-    <div class="hero-cta reveal">
-      <a href="#work" class=""></a>
-      <a href="#contact" class=""></a>
-    </div>
-  </div>
-</section>
+  <footer>
+    &copy; 2024 Lofty Builds. All rights reserved.
+  </footer>
 
-<section class="header">
-  <div>
-    <div class="eyebrow reveal">Builder · Landscaping & Terrain</div>
-    <h1 class="reveal">I turn flat terrain into <em>biomes</em> that feel alive.</h1>
-    <p class="reveal">I design and build natural landscapes for Minecraft servers: terraforming, biomes, rivers, organic spawns and world atmosphere. No templates — every terrain reads like it's always been there.</p>
-    <div class="hero-cta reveal">
-      <a href="#work" class="btn btn-primary">See work</a>
-      <a href="#contact" class="btn btn-ghost">Get a quote</a>
-    </div>
-  </div>
-</section>
-
-<section id="work">
-  <div class="label reveal">01 — Work</div>
-  <h2 class="section-title reveal">Terrain selection</h2>
-  <p class="section-intro reveal">A sample of recent builds. Each card notes the biome and type of intervention.</p>
-<div class="gallery-grid">
-    <div class="g-card g-featured reveal">
-      <img src="FoundationComp.jpg" alt="Destroyed Distopia" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
-      <div class="tag-row" style="position:relative;z-index:2;background:linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
-        <div class="g-title">Destroyed Distopia</div>
-      </div>
-    </div>
-    <div class="g-card g-top-a reveal">
-      <div class="placeholder-icon">🖼️</div>
-      <div class="tag-row">
-        <div class="biome-tag">BIOME · RIVER</div>
-        <div class="g-title">Screenshot 2</div>
-      </div>
-    </div>
-    <div class="g-card g-top-b reveal">
-      <div class="placeholder-icon">🖼️</div>
-      <div class="tag-row">
-        <div class="biome-tag">BIOME · FOREST</div>
-        <div class="g-title">Screenshot 3</div>
-      </div>
-    </div>
-    <div class="g-card g-tall-a reveal">
-      <div class="placeholder-icon">🖼️</div>
-      <div class="tag-row">
-        <div class="biome-tag">BIOME · MOUNTAIN</div>
-        <div class="g-title">Screenshot 4</div>
-      </div>
-    </div>
-    <div class="g-card g-tall-b reveal">
-      <div class="placeholder-icon">▶️</div>
-      <div class="tag-row">
-        <div class="biome-tag">TIMELAPSE</div>
-        <div class="g-title">Process video</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="gallery-note reveal">
-    // Note: these are card templates. Replace the emoji with &lt;img src="your-screenshot.jpg"&gt; inside each .g-card to show your real photos. While you gather more material, even 4-5 good screenshots from different angles are enough to launch the page.
-  </div>
-</section>
-
-<section id="contact">
-  <div class="contact-wrap reveal">
-    <div class="contact-marker mono">Open for commissions</div>
-    <h2>Got a project in mind?</h2>
-    <p>Tell me the details, size and deadline — I'll get back to you with a quote and delivery time.</p>
-    <div class="contact-links">
-      <a href="mailto:loftybuidsa@gmail.com" class="btn btn-primary on-dark btn-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5v-11Z"/><path d="m3 6 9 7 9-7"/></svg>
-        loftybuidsa@gmail.com
-      </a>
-      <a href="https://discord.com/users/loftty__" class="btn btn-ghost on-dark btn-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.1A17.6 17.6 0 0 0 15.9 4l-.2.4a12.9 12.9 0 0 1 3.8 1.9 15.6 15.6 0 0 0-13 0A12.7 12.7 0 0 1 10.3 4.4L10.1 4a17.6 17.6 0 0 0-4.4 1.1C2.4 9.3 1.6 13.4 1.9 17.4a17.6 17.6 0 0 0 5.4 2.8l.7-1.2a11.5 11.5 0 0 1-1.8-.9c.15-.1.3-.2.44-.32a12.4 12.4 0 0 0 11 0c.15.1.3.22.44.32-.57.35-1.17.65-1.8.9l.7 1.2a17.5 17.5 0 0 0 5.4-2.8c.4-4.7-.8-8.8-3.14-12.3ZM8.5 14.6c-.9 0-1.6-.85-1.6-1.9s.7-1.9 1.6-1.9 1.6.86 1.6 1.9-.7 1.9-1.6 1.9Zm7 0c-.9 0-1.6-.85-1.6-1.9s.7-1.9 1.6-1.9 1.6.86 1.6 1.9-.7 1.9-1.6 1.9Z"/></svg>
-        loftty__
-      </a>
-    </div>
-
-    <div class="social-divider">or find me on</div>
-    <div class="social-row">
-      <a href="https://twitter.com/yourhandle" class="social-icon" title="X / Twitter" aria-label="X / Twitter">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-7-6.2 7H1.3l8.1-9.3L1 2h7l4.9 6.4L18.9 2Zm-1.2 18h1.9L7.4 4h-2l12.3 16Z"/></svg>
-      </a>
-      <a href="https://instagram.com/yourhandle" class="social-icon" title="Instagram" aria-label="Instagram">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg>
-      </a>
-      <a href="https://youtube.com/@yourhandle" class="social-icon" title="YouTube" aria-label="YouTube">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.45-5.2a3 3 0 0 0-2.1-2.1C18.7 4.2 12 4.2 12 4.2s-6.7 0-8.45.5a3 3 0 0 0-2.1 2.1C1 8.5 1 12 1 12s0 3.5.45 5.2a3 3 0 0 0 2.1 2.1c1.75.5 8.45.5 8.45.5s6.7 0 8.45-.5a3 3 0 0 0 2.1-2.1C23 15.5 23 12 23 12ZM9.8 15.3V8.7l6 3.3-6 3.3Z"/></svg>
-      </a>
-      <a href="https://twitch.tv/yourhandle" class="social-icon" title="Twitch" aria-label="Twitch">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 2 2 6.5v14h5V22l3.5-1.5H14l4.5-4.5V2H4Zm16.5 12.5-3 3h-4l-2.5 2.5v-2.5H6.5v-14h14v11Zm-3-8h-1.5v5H17.5v-5Zm-4.5 0h-1.5v5H13v-5Z"/></svg>
-      </a>
-    </div>
-  </div>
-</section>
-
-<footer>
-  &copy; 2024 Lofty Builds. All rights reserved.
-</footer>
-
-<script>
-  const revealEls = document.querySelectorAll('.reveal');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, {threshold:0.15});
-  revealEls.forEach(el => io.observe(el));
-
-  const introOverlay = document.getElementById('introOverlay');
-  const introImg = introOverlay.querySelector('img');
-  const introTitle = document.getElementById('introTitle');
-  const whitePane = document.getElementById('whitePane');
-  const heroRevealEls = document.querySelectorAll('.hero .reveal');
-
-  const fadeDistance = () => window.innerHeight * 0.7;
-  const whiteThreshold = 0.35;
-  const revealThreshold = 0.65;
-
-  function clamp(v, a=0, b=1){ return Math.min(Math.max(v,a),b); }
-
-function updateIntro(){
-    const progress = clamp(window.scrollY / fadeDistance(), 0, 1);
-
-    // Smooth fade transition for the scroll hint/arrow
-    const introHint = introOverlay.querySelector('.intro-hint');
-    if (introHint) {
-      introHint.style.transition = 'opacity 0.4s ease'; // Smooth fade duration
-      const arrowFade = clamp(1 - (window.scrollY / 100), 0, 1); // Fades out over the first 100px of scroll
-      introHint.style.opacity = String(arrowFade);
-    }
-
-    introOverlay.style.opacity = String(1 - progress);
-    introImg.style.transform = `scale(${1 + progress * 0.18})`;
-
-    const titleFade = clamp(progress * 1.4, 0, 1);
-    introTitle.style.opacity = String(1 - titleFade);
-    introTitle.style.transform = `translate(-50%, ${-progress * 18}px)`;
-
-    introOverlay.style.pointerEvents = (progress >= 0.5) ? 'none' : 'auto';
-
-    if (progress <= whiteThreshold) {
-      whitePane.style.opacity = '0';
-    } else {
-      const local = clamp((progress - whiteThreshold) / (1 - whiteThreshold));
-      whitePane.style.opacity = String(local);
-    }
-
-    if (progress >= revealThreshold) {
-      document.documentElement.classList.add('light-mode');
-      heroRevealEls.forEach(el => el.classList.add('in'));
-    } else {
-      document.documentElement.classList.remove('light-mode');
-      heroRevealEls.forEach(el => el.classList.remove('in'));
-    }
-  }
-  updateIntro();
-  window.addEventListener('scroll', updateIntro, {passive:true});
-  window.addEventListener('resize', updateIntro);
-</script>
-
+  <script src="script.js" defer></script>
 </body>
 </html>
