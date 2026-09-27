@@ -1,190 +1,305 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Landscaping Builder Portfolio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Currency Converter</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#0F5257">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0F5257;
+    --teal-dark:#060606;
+    --gold:#C9A227;
+    --paper:#FBF8F1;
+    --ink:#1B2B2C;
+    --ok:#2E7D4F;
+    --err:#B3432B;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:"Atkinson Hyperlegible", system-ui, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    -webkit-tap-highlight-color:transparent;
+  }
+  header{
+    background:var(--teal);
+    color:var(--paper);
+    padding:22px 20px 26px;
+    text-align:center;
+  }
+  header h1{
+    margin:0;
+    font-size:1.6rem;
+    font-weight:700;
+    letter-spacing:0.2px;
+  }
+  main{
+    max-width:480px;
+    margin:0 auto;
+    padding:20px 20px 40px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid #E4DFD1;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:18px;
+    box-shadow:0 1px 0 rgba(0,0,0,0.03);
+  }
+  label{
+    display:block;
+    font-size:1.05rem;
+    font-weight:700;
+    margin-bottom:8px;
+    color:var(--teal-dark);
+  }
+  input[type="text"], input[type="number"]{
+    width:100%;
+    font-size:1.6rem;
+    font-family:inherit;
+    padding:14px 16px;
+    border:2px solid #D8D2BF;
+    border-radius:12px;
+    background:var(--paper);
+    color:var(--ink);
+  }
+  input:focus, select:focus, button:focus{
+    outline:3px solid var(--gold);
+    outline-offset:1px;
+  }
+  .currency-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  select{
+    flex:1;
+    font-size:1.3rem;
+    font-family:inherit;
+    padding:14px 10px;
+    border:2px solid #D8D2BF;
+    border-radius:12px;
+    background:#fff;
+    color:var(--ink);
+    appearance:none;
+    text-align:center;
+    font-weight:700;
+  }
+  .swap-wrap{
+    display:flex;
+    justify-content:center;
+    margin:14px 0;
+  }
+  .swap-btn{
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    border:2px solid var(--teal);
+    background:var(--paper);
+    color:var(--teal);
+    font-size:1.5rem;
+    cursor:pointer;
+  }
+  .swap-btn:active{ background:var(--teal); color:#fff; }
+  .result{
+    text-align:center;
+    padding:6px 0 2px;
+  }
+  .result .amount{
+    font-size:2.1rem;
+    font-weight:700;
+    color:#8c2121;
+    word-break:break-word;
+  }
+  .rate{
+    text-align:center;
+    font-size:1rem;
+    color:#5B6B6B;
+    margin-top:4px;
+  }
+  .status{
+    text-align:center;
+    font-size:0.95rem;
+    margin-top:14px;
+    min-height:1.3em;
+  }
+  .status.ok{ color:var(--ok); }
+  .status.err{ color:var(--err); }
+  footer{
+    text-align:center;
+    font-size:0.85rem;
+    color:#8A8577;
+    padding:0 20px 24px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#15201F;
+      --ink:#EDEAE0;
+    }
+    body{ background:var(--paper); }
+    .card{ background:#234340; border-color:#2B3A38; }
+    input, select{ background:#201515; border-color:#33413F; color:var(--ink); }
+    .rate{ color:#9FB0AE; }
+    footer{ color:#6E7A78; }
+  }
+</style>
 </head>
 <body>
+<header>
+  <h1>Currency Converter</h1>
+</header>
+<main>
+  <div class="card">
+    <label for="amount">Amount</label>
+    <input type="text" inputmode="decimal" id="amount" value="1" autocomplete="off">
+  </div>
 
-  <div class="intro-overlay" id="introOverlay">
-    <img src="profile.png" alt="Builder profile render">
-    <div class="intro-hint mono">
-      <span>Scroll</span>
-      <div class="arrow"></div>
+  <div class="card">
+    <label for="from">From</label>
+    <div class="currency-row">
+      <select id="from" aria-label="From currency"></select>
+    </div>
+
+    <div class="swap-wrap">
+      <button class="swap-btn" id="swapBtn" aria-label="Swap currencies" title="Swap">⇅</button>
+    </div>
+
+    <label for="to">To</label>
+    <div class="currency-row">
+      <select id="to" aria-label="To currency"></select>
     </div>
   </div>
 
-  <div class="white-pane" id="whitePane" aria-hidden="true"></div>
-  <div class="intro-title" id="introTitle" aria-hidden="true">Lofty Builds</div>
+  <div class="card result">
+    <div class="amount" id="resultText">—</div>
+    <div class="rate" id="rateText">Loading rate…</div>
+    <div class="status" id="statusText">Connecting…</div>
+  </div>
+</main>
+<footer>Rates from the European Central Bank via frankfurter.app</footer>
 
-  <header>
-    <nav>
-      <a href="#work">Work</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <div>
-      <div class="eyebrow reveal"></div>
-      <h1 class="reveal"><em></em></h1>
-      <p class="reveal"></p>
-      <div class="hero-cta reveal">
-        <a href="#work" class=""></a>
-        <a href="#contact" class=""></a>
-      </div>
-    </div>
-  </section>
-
-  <section class="header">
-    <div>
-      <div class="eyebrow reveal">Builder · All types of builds</div>
-      <h1 class="reveal">I turn your ideas into minecraft builds</h1>
-      <p class="reveal">I design all types of Minecraft builds, from small projects like boats or houses to large-scale villages, cities and entire worlds.</p>
-      <div class="hero-cta reveal">
-        <a href="#work" class="btn btn-primary">See work</a>
-        <a href="#contact" class="btn btn-ghost">Contact information</a>
-      </div>
-    </div>
-    <hr class="divider">
-  </section>
-
-  <section id="work">
-    <div class="label reveal">01 — Work</div>
-    <h2 class="section-title reveal">Build selection</h2>
-    <p class="section-intro reveal">A sample of recent builds.</p>
-    <div class="gallery-grid">
-      <a href="terrain.html" class="g-card g-featured reveal">
-        <img src="terrain.jpg" alt="Terrain" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
-        <div class="tag-row" style="position:relative;z-index:2;background:linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
-          <div class="g-title">Terrain</div>
-        </div>
-      </a>
-
-      <a href="organics.html" class="g-card g-top-a reveal">
-        <img src="WeepingWillow_Raw.png" alt="Organics" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
-        <div class="tag-row" style="position:relative;z-index:2;background:linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
-          <div class="g-title">Organics</div>
-        </div>
-      </a>
-
-      <a href="structures.html" class="g-card g-top-b reveal">
-        <img src="VictorianMansion_shaders_front.png" alt="Structures" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;">
-        <div class="tag-row" style="position:relative;z-index:2;background:linear-gradient(to top, rgba(0,0,0,0.85), transparent);">
-          <div class="g-title">Structures</div>
-        </div>
-      </a>
-    </div>
-    <hr class="divider">
-  </section>
-
-  <section id="contact">
-    <div class="contact-wrap reveal">
-      <div class="contact-marker mono">Open for commissions</div>
-      <h2>Got a project in mind?</h2>
-      <p>Tell me the details, size and deadline — I'll get back to you with a quote and delivery time.</p>
-      <div class="contact-links">
-        <a href="mailto:loftybuidsa@gmail.com" class="btn btn-primary on-dark btn-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6.5A2.5 2.5 0 0 1 4.5 4h15A2.5 2.5 0 0 1 22 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 17.5v-11Z"/><path d="m3 6 9 7 9-7"/></svg>
-          loftybuidsa@gmail.com
-        </a>
-        <a href="https://discord.com/users/loftty__" class="btn btn-ghost on-dark btn-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.1A17.6 17.6 0 0 0 15.9 4l-.2.4a12.9 12.9 0 0 1 3.8 1.9 15.6 15.6 0 0 0-13 0A12.7 12.7 0 0 1 10.3 4.4L10.1 4a17.6 17.6 0 0 0-4.4 1.1C2.4 9.3 1.6 13.4 1.9 17.4a17.6 17.6 0 0 0 5.4 2.8l.7-1.2a11.5 11.5 0 0 1-1.8-.9c.15-.1.3-.2.44-.32a12.4 12.4 0 0 0 11 0c.15.1.3.22.44.32-.57.35-1.17.65-1.8.9l.7 1.2a17.5 17.5 0 0 0 5.4-2.8c.4-4.7-.8-8.8-3.14-12.3ZM8.5 14.6c-.9 0-1.6-.85-1.6-1.9s.7-1.9 1.6-1.9 1.6.86 1.6 1.9-.7 1.9-1.6 1.9Zm7 0c-.9 0-1.6-.85-1.6-1.9s.7-1.9 1.6-1.9 1.6.86 1.6 1.9-.7 1.9-1.6 1.9Z"/></svg>
-          loftty__
-        </a>
-      </div>
-
-      <div class="social-divider">or find me on</div>
-      <div class="social-row">
-        <a href="https://x.com/LoftyBuilds" class="social-icon" title="X / Twitter" aria-label="X / Twitter">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-7-6.2 7H1.3l8.1-9.3L1 2h7l4.9 6.4L18.9 2Zm-1.2 18h1.9L7.4 4h-2l12.3 16Z"/></svg>
-        </a>
-        <a href="https://instagram.com/LoftyBuilds" class="social-icon" title="Instagram" aria-label="Instagram">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg>
-        </a>
-        <a href="https://youtube.com/@LoftyBuild" class="social-icon" title="YouTube" aria-label="YouTube">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.45-5.2a3 3 0 0 0-2.1-2.1C18.7 4.2 12 4.2 12 4.2s-6.7 0-8.45.5a3 3 0 0 0-2.1 2.1C1 8.5 1 12 1 12s0 3.5.45 5.2a3 3 0 0 0 2.1 2.1c1.75.5 8.45.5 8.45.5s6.7 0 8.45-.5a3 3 0 0 0 2.1-2.1C23 15.5 23 12 23 12ZM9.8 15.3V8.7l6 3.3-6 3.3Z"/></svg>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <section id="support">
-    <div class="support-wrap reveal">
-      <div class="support-marker mono">Support the project</div>
-      <h2>Enjoying the builds?</h2>
-      <p>Back the project on Patreon and get access to exclusive perks.</p>
-
-      <div class="tier-grid">
-        <div class="tier-card">
-          <div class="tier-name">Supporter</div>
-          <div class="tier-price">$3<span>/mo</span></div>
-          <ul class="tier-perks">
-            <li>Early access to build previews</li>
-            <li>Name in credits</li>
-          </ul>
-          <a href="https://patreon.com/LoftyBuilds" target="_blank" rel="noopener" class="btn btn-ghost on-dark">Join</a>
-        </div>
-
-        <div class="tier-card tier-featured">
-          <div class="tier-badge">Most popular</div>
-          <div class="tier-name">Builder</div>
-          <div class="tier-price">$7<span>/mo</span></div>
-          <ul class="tier-perks">
-            <li>Everything in Supporter</li>
-            <li>Download world files</li>
-            <li>Vote on next build</li>
-          </ul>
-          <a href="https://patreon.com/LoftyBuilds" target="_blank" rel="noopener" class="btn btn-primary on-dark">Join</a>
-        </div>
-
-        <div class="tier-card">
-          <div class="tier-name">Architect</div>
-          <div class="tier-price">$15<span>/mo</span></div>
-          <ul class="tier-perks">
-            <li>Everything in Builder</li>
-            <li>1-on-1 build request</li>
-            <li>Discord VIP role</li>
-          </ul>
-          <a href="https://patreon.com/LoftyBuilds" target="_blank" rel="noopener" class="btn btn-ghost on-dark">Join</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div id="paypal-button-container-P-6VK43228VS792024ENKQUKUQ"></div>
-<script src="https://www.paypal.com/sdk/js?client-id=BAAiT90zRKpWzNAK6HbQMTFlPd3K7BJ_a0HIuQLbR1v45Xwdy8ETSQp8TBkftXROd1WYzAL7H_Iimugr78&vault=true&intent=subscription" data-sdk-integration-source="button-factory"></script>
 <script>
-  paypal.Buttons({
-      style: {
-          shape: 'rect',
-          color: 'gold',
-          layout: 'vertical',
-          label: 'subscribe'
-      },
-      createSubscription: function(data, actions) {
-        return actions.subscription.create({
-          /* Creates the subscription */
-          plan_id: 'P-6VK43228VS792024ENKQUKUQ'
-        });
-      },
-      onApprove: function(data, actions) {
-        alert(data.subscriptionID); // You can add optional success message for the subscriber here
-      }
-  }).render('#paypal-button-container-P-6VK43228VS792024ENKQUKUQ'); // Renders the PayPal button
+const CURRENCIES = [
+  ["EUR","Euro"],["USD","US Dollar"],["GBP","British Pound"],
+  ["HUF","Hungarian Forint"],["CHF","Swiss Franc"],["JPY","Japanese Yen"],
+  ["RON","Romanian Leu"],["PLN","Polish Zloty"],["CZK","Czech Koruna"],
+  ["CAD","Canadian Dollar"],["AUD","Australian Dollar"]
+];
+const REFRESH_MS = 60_000;
+
+const fromSel = document.getElementById('from');
+const toSel = document.getElementById('to');
+const amountInput = document.getElementById('amount');
+const resultText = document.getElementById('resultText');
+const rateText = document.getElementById('rateText');
+const statusText = document.getElementById('statusText');
+const swapBtn = document.getElementById('swapBtn');
+
+let currentRate = null;
+let refreshTimer = null;
+
+function fillSelect(sel, defaultCode){
+  sel.innerHTML = '';
+  for (const [code, name] of CURRENCIES){
+    const opt = document.createElement('option');
+    opt.value = code;
+    opt.textContent = `${code} — ${name}`;
+    if (code === defaultCode) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+fillSelect(fromSel, 'EUR');
+fillSelect(toSel, 'HUF');
+
+function setStatus(msg, kind){
+  statusText.textContent = msg;
+  statusText.className = 'status' + (kind ? ' ' + kind : '');
+}
+
+function convert(){
+  if (currentRate == null){
+    resultText.textContent = 'Waiting for rate…';
+    return;
+  }
+  const raw = amountInput.value.replace(',', '.');
+  const amount = parseFloat(raw);
+  if (isNaN(amount)){
+    resultText.textContent = 'Enter a valid number';
+    return;
+  }
+  const result = amount * currentRate;
+  resultText.textContent =
+    `${amount.toLocaleString(undefined,{maximumFractionDigits:2})} ${fromSel.value} = ` +
+    `${result.toLocaleString(undefined,{maximumFractionDigits:2})} ${toSel.value}`;
+}
+
+async function updateRate(){
+  const from = fromSel.value;
+  const to = toSel.value;
+
+  if (from === to){
+    currentRate = 1;
+    rateText.textContent = `1 ${from} = 1.0000 ${to}`;
+    setStatus('Rate updated', 'ok');
+    convert();
+    scheduleNext();
+    return;
+  }
+
+  try{
+    setStatus('Updating…', '');
+    const url = `https://api.frankfurter.dev/v2/rate/${from.toLowerCase()}/${to.toLowerCase()}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('bad response');
+    const data = await res.json();
+    const rate = data.rate;
+    if (typeof rate !== 'number') throw new Error('missing rate');
+    currentRate = rate;
+    rateText.textContent = `1 ${from} = ${rate.toFixed(4)} ${to}`;
+    setStatus('Rate updated', 'ok');
+    convert();
+  } catch (err){
+    setStatus('Could not update exchange rate', 'err');
+    console.error(err);
+  }
+  scheduleNext();
+}
+
+function scheduleNext(){
+  if (refreshTimer) clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(updateRate, REFRESH_MS);
+}
+
+function swap(){
+  const f = fromSel.value, t = toSel.value;
+  fromSel.value = t;
+  toSel.value = f;
+  updateRate();
+}
+
+fromSel.addEventListener('change', updateRate);
+toSel.addEventListener('change', updateRate);
+amountInput.addEventListener('input', convert);
+swapBtn.addEventListener('click', swap);
+
+updateRate();
+
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(console.error);
+  });
+}
 </script>
-
-  <footer>
-    &copy; 2024 Lofty Builds. All rights reserved.
-  </footer>
-
-  <script src="script.js" defer></script>
 </body>
 </html>
